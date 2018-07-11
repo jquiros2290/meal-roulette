@@ -7,14 +7,18 @@
         <title>Laravel</title>
         <!-- Fonts -->
         <link href="https://fonts.googleapis.com/css?family=Raleway:100,600" rel="stylesheet" type="text/css">
+        
+        <link rel="stylesheet" href="{{asset('css/bootstrap.min.css')}}">
+
         <!-- Styles -->
     </head>
     <body>
+
         <input type="button" value="spin" style="float:left;" id='spin' />
         <canvas id="canvas" width="700" height="700"></canvas>
     </body>
     <script type="text/javascript">
-        var options = [{name: "Frankie's", site: "frankies.com"}, "Ravenna", "City Tavern", "Trompo Taco", "Latin Deli", "Chick-fil-A"];
+        var options = [{name: "Frankie's", site: "frankies.com"}, {name: "Ravenna", site: "ravenna.com"}, {name: "City Tavern", site: "citytavern.com"}, {name: "Trompo Taco", site: "trompo.com"}, {name: "Latin Deli", site: "latindeli.com"}, {name: "Chick-fil-A", site: "chick-fil-a.com"}];
         var startAngle = 0;
         var arc = Math.PI / (options.length / 2);
         var spinTimeout = null;
@@ -76,7 +80,7 @@
                 ctx.translate(250 + Math.cos(angle + arc / 2) * textRadius,
                 250 + Math.sin(angle + arc / 2) * textRadius);
                 ctx.rotate(angle + arc / 2 + Math.PI / 2);
-                var text = options[i];
+                var text = options[i]['name'];
                 ctx.fillText(text, -ctx.measureText(text).width / 2, 0);
                 ctx.restore();
             }
@@ -97,38 +101,53 @@
     }
 
     function spin() {
-    spinAngleStart = Math.random() * 10 + 10;
-    spinTime = 0;
-    spinTimeTotal = Math.random() * 3 + 4 * 1000;
-    rotateWheel();
+        spinAngleStart = Math.random() * 10 + 10;
+        spinTime = 0;
+        spinTimeTotal = Math.random() * 3 + 4 * 1000;
+        rotateWheel();
     }
+
     function rotateWheel() {
-    spinTime += 30;
-    if(spinTime >= spinTimeTotal) {
-    stopRotateWheel();
-    return;
+        spinTime += 30;
+
+        if(spinTime >= spinTimeTotal) {
+            stopRotateWheel();
+            return;
+        }
+
+        var spinAngle = spinAngleStart - easeOut(spinTime, 0, spinAngleStart, spinTimeTotal);
+        startAngle += (spinAngle * Math.PI / 180);
+        drawRouletteWheel();
+        spinTimeout = setTimeout('rotateWheel()', 30);
     }
-    var spinAngle = spinAngleStart - easeOut(spinTime, 0, spinAngleStart, spinTimeTotal);
-    startAngle += (spinAngle * Math.PI / 180);
-    drawRouletteWheel();
-    spinTimeout = setTimeout('rotateWheel()', 30);
-    }
+
     function stopRotateWheel() {
-    clearTimeout(spinTimeout);
-    var degrees = startAngle * 180 / Math.PI + 90;
-    var arcd = arc * 180 / Math.PI;
-    var index = Math.floor((360 - degrees % 360) / arcd);
-    ctx.save();
-    ctx.font = 'bold 30px Helvetica, Arial';
-    var text = options[index]
-    ctx.fillText(text, 250 - ctx.measureText(text).width / 2, 250 + 10);
-    ctx.restore();
+        clearTimeout(spinTimeout);
+        var degrees = startAngle * 180 / Math.PI + 90;
+        var arcd = arc * 180 / Math.PI;
+        var index = Math.floor((360 - degrees % 360) / arcd);
+        ctx.save();
+        ctx.font = 'bold 30px Helvetica, Arial';
+        var text = options[index]['name'];
+        ctx.fillText(text, 250 - ctx.measureText(text).width / 2, 250 + 10);
+        ctx.restore();
+
+        restaurantInfo(options[index]);
     }
+
     function easeOut(t, b, c, d) {
-    var ts = (t/=d)*t;
-    var tc = ts*t;
-    return b+c*(tc + -3*ts + 3*t);
+        var ts = (t/=d)*t;
+        var tc = ts*t;
+        return b+c*(tc + -3*ts + 3*t);
     }
+
+    function restaurantInfo(info){
+        // console.log(info);
+        // console.log(info['name']);
+        // console.log(info['site']);
+    }
+
     drawRouletteWheel();
+
     </script>
 </html>
