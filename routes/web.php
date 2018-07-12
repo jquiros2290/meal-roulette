@@ -12,3 +12,4 @@
 */
 
 Route::get('/', 'MealsController@index');
+Route::post('/meal', 'MealsController@find_meal');
