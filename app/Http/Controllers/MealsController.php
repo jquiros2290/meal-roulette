@@ -11,7 +11,8 @@ class MealsController extends Controller
 
 	function index(){
 		$googlePlaces = new PlacesApi(env('PLACES_API_KEY'));
-		$response = $googlePlaces->textSearch('lunch in dallas', ['location' => '32.7767, 96.7970', 'radius' => '10']);
+		$response = $googlePlaces->textSearch('lunch in las colinas', ['minprice' => 0, 'maxprice' => 1, 'radius' => 5000]);
+
 		$results = [];
 		$random_results = [];
 
@@ -36,10 +37,13 @@ class MealsController extends Controller
 	function find_meal(Request $request){
 
 		$meal =  $request->meal;
-		$city = $request->city; 
+		$city = $request->city;
+		$min_price = (int)$request->min_price;
+		$max_price = (int)$request->max_price;
+
 
 		$googlePlaces = new PlacesApi(env('PLACES_API_KEY'));
-		$response = $googlePlaces->textSearch($meal .' in ' . $city);
+		$response = $googlePlaces->textSearch($meal .' in ' . $city,['minprice' => $min_price, 'maxprice' => $max_price, 'radius' => 5000]);
 
 		$results = [];
 		$random_results = [];
